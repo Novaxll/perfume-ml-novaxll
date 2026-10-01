@@ -1,3 +1,5 @@
+import warnings
+warnings.filterwarnings('ignore')
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
@@ -26,29 +28,26 @@ preprocessor = ColumnTransformer(
     ]
 )
 
-# 1. Pipeline con Árbol de Decisión Simple
-dt_pipeline = Pipeline(steps=[
-    ('preprocessor', preprocessor),
-    ('model', DecisionTreeRegressor(random_state=1))
-])
+dt_pipeline = Pipeline(steps=[('preprocessor', preprocessor), ('model', DecisionTreeRegressor(random_state=1))])
 dt_pipeline.fit(X_train, y_train)
-dt_preds = dt_pipeline.predict(X_valid)
-print("MAE - Decision Tree:", mean_absolute_error(y_valid, dt_preds))
+mae_dt = mean_absolute_error(y_valid, dt_pipeline.predict(X_valid))
 
-# 2. Pipeline con Random Forest
-rf_pipeline = Pipeline(steps=[
-    ('preprocessor', preprocessor),
-    ('model', RandomForestRegressor(n_estimators=100, random_state=1))
-])
+rf_pipeline = Pipeline(steps=[('preprocessor', preprocessor), ('model', RandomForestRegressor(n_estimators=100, random_state=1))])
 rf_pipeline.fit(X_train, y_train)
-rf_preds = rf_pipeline.predict(X_valid)
-print("MAE - Random Forest:", mean_absolute_error(y_valid, rf_preds))
+mae_rf = mean_absolute_error(y_valid, rf_pipeline.predict(X_valid))
 
-# 3. Pipeline con XGBoost
-xgb_pipeline = Pipeline(steps=[
-    ('preprocessor', preprocessor),
-    ('model', XGBRegressor(n_estimators=100, learning_rate=0.05, random_state=1))
-])
+xgb_pipeline = Pipeline(steps=[('preprocessor', preprocessor), ('model', XGBRegressor(n_estimators=100, learning_rate=0.05, random_state=1))])
 xgb_pipeline.fit(X_train, y_train)
-xgb_preds = xgb_pipeline.predict(X_valid)
-print("MAE - XGBoost:", mean_absolute_error(y_valid, xgb_preds))
+mae_xgb = mean_absolute_error(y_valid, xgb_pipeline.predict(X_valid))
+
+print("\n" + "="*65)
+print(" 5. COMPARATIVA DE MODELOS AVANZADOS (PIPELINES) ".center(65, "="))
+print("="*65)
+
+res = pd.DataFrame({
+    'Algoritmo': ['Decision Tree', 'Random Forest', 'XGBoost'],
+    'MAE (Horas)': [f"{mae_dt:.4f}", f"{mae_rf:.4f}", f"{mae_xgb:.4f}"],
+    'Margen de Error': [f"~{int(mae_dt*60)} mins", f"~{int(mae_rf*60)} mins", f"~{int(mae_xgb*60)} mins"]
+})
+
+print("\n" + res.to_string(index=False) + "\n")

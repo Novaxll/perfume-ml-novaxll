@@ -1,3 +1,5 @@
+import warnings
+warnings.filterwarnings('ignore')
 import pandas as pd
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import mean_absolute_error
@@ -16,4 +18,9 @@ model.fit(X, y)
 
 predictions = model.predict(X)
 mae_in_sample = mean_absolute_error(y, predictions)
-print("MAE In-Sample (Entrenamiento):", mae_in_sample)
+
+print("\n" + "="*65)
+print(" 3. EVALUACIÓN MAE IN-SAMPLE ".center(65, "="))
+print("="*65)
+
+print(f"\n• Error Absoluto Medio (In-Sample) : {mae_in_sample:.4f} horas (~{int(mae_in_sample*60)} mins)")
